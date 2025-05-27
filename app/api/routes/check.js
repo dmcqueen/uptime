@@ -42,12 +42,13 @@ module.exports = function(app) {
     Check
     .find({ _id: req.params.id })
     .select({qos: 0})
-    .findOne(function(err, check) {
-      if (err) return next(err);
+    .findOne()
+    .then(function(check) {
       if (!check) return res.json(404, { error: 'failed to load check ' + req.params.id });
       req.check = check;
       next();
-    });
+    })
+    .catch(next);
   };
 
   app.get('/checks/:id', loadCheck, function(req, res, next) {

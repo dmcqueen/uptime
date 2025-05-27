@@ -26,7 +26,8 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
   Ping
   .find()
   .sort({ 'timestamp': 1 })
-  .findOne(function(err, ping) {
+  .findOne()
+  .then(function(ping) {
     var date = Date.now() + 60 * 60 * 1000;
     var oldestDate = ping.timestamp.valueOf();
     var nbDates = 0;
@@ -42,14 +43,15 @@ var updateHourlyQosSinceTheFirstPing = function(callback) {
       },
       callback
     );
-  });
+  }).catch(callback);
 };
 
 var updateDailyQosSinceTheFirstPing = function(callback) {
   Ping
   .find()
   .sort({ 'timestamp': 1 })
-  .findOne(function(err, ping) {
+  .findOne()
+  .then(function(ping) {
     var date = Date.now() + 24 * 60 * 60 * 1000;
     var oldestDate = ping.timestamp.valueOf();
     async.whilst(
@@ -61,14 +63,15 @@ var updateDailyQosSinceTheFirstPing = function(callback) {
       },
       callback
     );
-  });
+  }).catch(callback);
 };
 
 var updateMonthlyQosSinceTheFirstPing = function(callback) {
   Ping
   .find()
   .sort({ 'timestamp': 1 })
-  .findOne(function(err, ping) {
+  .findOne()
+  .then(function(ping) {
     var date = Date.now() + 28 * 24 * 60 * 60 * 1000;
     var oldestDate = ping.timestamp.valueOf();
     var nbDates = 0;
@@ -82,14 +85,15 @@ var updateMonthlyQosSinceTheFirstPing = function(callback) {
       },
       callback
     );
-  });
+  }).catch(callback);
 };
 
 var updateYearlyQosSinceTheFirstPing = function(callback) {
   Ping
   .find()
   .sort({ 'timestamp': 1 })
-  .findOne(function(err, ping) {
+  .findOne()
+  .then(function(ping) {
     var date = Date.now() + 365 * 24 * 60 * 60 * 1000;
     var oldestDate = ping.timestamp.valueOf();
     var nbDates = 0;
@@ -103,7 +107,7 @@ var updateYearlyQosSinceTheFirstPing = function(callback) {
       },
       callback
     );
-  });
+  }).catch(callback);
 };
 
 var updateLastDayQos = function(callback) {
