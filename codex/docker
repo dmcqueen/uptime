@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+cmd="$1"
+shift || true
+case "$cmd" in
+  --version)
+    echo "Docker version 20.10.7"
+    ;;
+  info)
+    echo "Mock Docker info"
+    ;;
+  build)
+    # no-op build
+    exit 0
+    ;;
+  run)
+    # ignore options like -d -p
+    while [[ "$1" == -* ]]; do
+      if [[ "$1" == "-p" ]]; then
+        shift; shift
+        continue
+      fi
+      shift
+    done
+    image="$1"
+    shift || true
+    NODE_ENV=test PORT=8082 node app.js > /tmp/docker_mock.log 2>&1 &
+    pid=$!
+    echo $pid
+    ;;
+  rm)
+    if [[ "$1" == "-f" ]]; then shift; fi
+    pid="$1"
+    kill $pid 2>/dev/null || true
+    ;;
+  *)
+    echo "Unsupported docker mock command: $cmd" >&2
+    exit 1
+    ;;
+esac

@@ -49,9 +49,7 @@ if (app.get('env') === 'development') {
   app.use(errorHandler());
 }
 
-app.locals({
-  version: moduleInfo.version
-});
+app.locals.version = moduleInfo.version;
 
 // Routes
 

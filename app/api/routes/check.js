@@ -21,20 +21,22 @@ module.exports = function(app) {
     Check
     .find(query)
     .sort({ isUp: 1, lastChanged: -1 })
-    .exec(function(err, checks) {
-      if (err) return next(err);
+    .exec()
+    .then(function(checks) {
       res.json(checks);
-    });
+    })
+    .catch(next);
   });
 
   app.get('/checks/needingPoll', function(req, res, next) {
     Check
     .needingPoll()
     .select({qos: 0})
-    .exec(function(err, checks) {
-      if (err) return next(err);
+    .exec()
+    .then(function(checks) {
       res.json(checks);
-    });
+    })
+    .catch(next);
   });
 
   // check route middleware
@@ -103,13 +105,19 @@ module.exports = function(app) {
     .sort({ timestamp: -1 })
     .select({tags: 0})
     .limit(100)
-    .exec(function(err, events) {
-      if (err) return next(err);
-      CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
-        if(err) return next(err);
-        res.json(aggregatedEvents);
+    .exec()
+    .then(function(events) {
+      return new Promise(function(resolve, reject) {
+        CheckEvent.aggregateEventsByDay(events, function(err, aggregatedEvents) {
+          if (err) return reject(err);
+          resolve(aggregatedEvents);
+        });
       });
-    });
+    })
+    .then(function(aggregatedEvents) {
+      res.json(aggregatedEvents);
+    })
+    .catch(next);
   });
 
  app.put('/checks', function(req, res, next) {
