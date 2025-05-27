@@ -30,7 +30,7 @@
     "semver": "^7.5.4",
     "moment": "^2.29.4",
     "nodemailer": "^6.9.3",
-    "net-ping": "^1.2.5",
+    "net-ping": "^1.2.4",
     "js-yaml": "^4.1.0",
     "webpagetest": "^4.0.2"
   },
