@@ -9,7 +9,6 @@
     "type": "git",
     "url": "https://github.com/fzaninotto/uptime"
   },
-  // Support modern Node versions. Adjust if necessary.
   "engines": {
     "node": ">=16.0.0"
   },
@@ -18,59 +17,25 @@
     "test": "mocha test/lib"
   },
   "dependencies": {
-    // PostgreSQL client
     "pg": "^8.11.1",
-
-    // Mongoose 7+ (major breaking changes if coming from 3.x)
     "mongoose": "^7.5.0",
-
-    // This package is very old; may not be compatible with Mongoose 7+
     "mongoose-lifecycle": "1.0.0",
-
-    // Express 4 (latest stable, 5 is still in alpha)
     "express": "^4.18.2",
-
-    // Rarely updated, 0.3.0 is the last known stable
     "express-partials": "^0.3.0",
-
-    // Last stable version of connect-flash
     "connect-flash": "^0.1.1",
-
-    // EJS templating engine (3.x is current)
     "ejs": "^3.1.9",
-
-    // Node.js application configuration
     "config": "^3.3.9",
-
-    // Async utilities (3.x is current)
     "async": "^3.2.4",
-
-    // Socket.IO 4 (major changes from v0.9.x)
     "socket.io": "^4.7.2",
-
-    // Semver utility
     "semver": "^7.5.4",
-
-    // Moment is in maintenance mode at 2.29.x
     "moment": "^2.29.4",
-
-    // Nodemailer 6 (major changes from 0.x)
     "nodemailer": "^6.9.3",
-
-    // Network ping utility
     "net-ping": "^1.2.5",
-
-    // YAML parser
     "js-yaml": "^4.1.0",
-
-    // WebPageTest API client
     "webpagetest": "^4.0.2"
   },
   "devDependencies": {
-    // Mocha 10.x
     "mocha": "^10.2.0",
-
-    // 'should' assertion library
     "should": "^13.2.3"
   }
 }
