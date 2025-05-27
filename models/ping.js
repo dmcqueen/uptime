@@ -19,7 +19,8 @@ Ping.index({ check: 1 });
 Ping.plugin(require('mongoose-lifecycle'));
 
 Ping.methods.findCheck = function(callback) {
-  return this.db.model('Check').findById(this.check, callback);
+  const query = this.db.model('Check').findById(this.check);
+  return typeof callback === 'function' ? query.exec(callback) : query.exec();
 };
 
 Ping.methods.setDetails = function(details) {
