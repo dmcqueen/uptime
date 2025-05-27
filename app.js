@@ -116,8 +116,8 @@ io.sockets.on('connection', function(socket) {
 });
 
 // old way to load plugins, kept for BC
-fs.exists('./plugins/index.js', function(exists) {
-  if (exists) {
+fs.access('./plugins/index.js', fs.constants.F_OK, function(err) {
+  if (!err) {
     var pluginIndex = require('./plugins');
     var initFunction = pluginIndex.init || pluginIndex.initWebApp;
     if (typeof initFunction === 'function') {
