@@ -5,17 +5,24 @@ var app = require('../../app');
 var assert = require('assert');
 var http = require('http');
 
+var GET_PORT = 3010;
+var PUT_PORT = 3011;
+var POST_PORT = 3012;
+
 describe('GET /checks', function() {
 
   var check1, check2, pollerCollection; // fixtures
 
   before(function(done) {
+    this.timeout(5000);
     pollerCollection = app.get('pollerCollection');
-    this.server = app.listen(3000, done);
+    const startServer = () => { this.server = app.listen(GET_PORT, done); };
+    if (mongoose.connection.readyState === 1) return startServer();
+    mongoose.connection.once('open', startServer);
   });
 
-  before(function(done) {
-    Check.remove({}, done);
+  before(async function() {
+    await Check.deleteMany({});
   });
 
   before(function(done) {
@@ -37,7 +44,7 @@ describe('GET /checks', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: GET_PORT,
       path: '/api/checks',
       headers: {
         'Accept': 'application/json'
@@ -65,8 +72,8 @@ describe('GET /checks', function() {
     });
   });
 
-  after(function(done) {
-    Check.remove({}, done);
+  after(async function() {
+    await Check.deleteMany({});
   });
 
   after(function(done) {
@@ -77,7 +84,10 @@ describe('GET /checks', function() {
 describe('PUT /checks', function() {
 
   before(function(done) {
-    this.server = app.listen(3000, done);
+    this.timeout(5000);
+    const startServer = () => { this.server = app.listen(PUT_PORT, done); };
+    if (mongoose.connection.readyState === 1) return startServer();
+    mongoose.connection.once('open', startServer);
   });
 
   it('should add a new valid element', function(done) {
@@ -89,7 +99,7 @@ describe('PUT /checks', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: PUT_PORT,
       path: '/api/checks',
       method: 'PUT',
       headers: {
@@ -134,7 +144,7 @@ describe('PUT /checks', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: PUT_PORT,
       path: '/api/checks',
       method: 'PUT',
       headers: {
@@ -173,7 +183,7 @@ describe('PUT /checks', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: PUT_PORT,
       path: '/api/checks',
       method: 'PUT',
       headers: {
@@ -205,8 +215,8 @@ describe('PUT /checks', function() {
     req.end();
   });
 
-  after(function(done) {
-    Check.remove({}, done);
+  after(async function() {
+    await Check.deleteMany({});
   });
 
   after(function(done) {
@@ -219,8 +229,11 @@ describe('POST /checks/:id', function() {
   var check1, check2, pollerCollection; // fixtures
 
   before(function(done) {
+    this.timeout(5000);
     pollerCollection = app.get('pollerCollection');
-    this.server = app.listen(3000, done);
+    const startServer = () => { this.server = app.listen(POST_PORT, done); };
+    if (mongoose.connection.readyState === 1) return startServer();
+    mongoose.connection.once('open', startServer);
   });
 
   before(function(done) {
@@ -246,7 +259,7 @@ describe('POST /checks/:id', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: POST_PORT,
       path: '/api/checks/toto',
       method: 'POST',
       headers: {
@@ -287,7 +300,7 @@ describe('POST /checks/:id', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: POST_PORT,
       path: '/api/checks/' + check1.id,
       method: 'POST',
       headers: {
@@ -328,7 +341,7 @@ describe('POST /checks/:id', function() {
 
     var options = {
       hostname: '127.0.0.1',
-      port: 3000,
+      port: POST_PORT,
       path: '/api/checks/' + check1.id,
       method: 'POST',
       headers: {
@@ -361,8 +374,8 @@ describe('POST /checks/:id', function() {
     req.end();
   });
 
-  after(function(done) {
-    Check.remove({}, done);
+  after(async function() {
+    await Check.deleteMany({});
   });
 
   after(function(done) {
