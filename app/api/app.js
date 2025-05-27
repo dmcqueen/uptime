@@ -6,6 +6,7 @@ var Check      = require('../../models/check');
 var CheckEvent = require('../../models/checkEvent');
 
 var app = module.exports = express();
+require('../../lib/express-compat')(app);
 
 var debugErrorHandler = function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));

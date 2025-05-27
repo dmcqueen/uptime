@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test';
 var should = require('should');
 var async = require('async');
 var mongoose = require('../../bootstrap');
@@ -11,11 +12,15 @@ var check1, check2, now; // fixtures
 describe('intervalBuilder', function() {
 
   before(function(done) {
-    async.parallel([
-      function(cb) { Ping.collection.remove({ }, cb) },
-      function(cb) { Check.collection.remove({ }, cb) },
-      function(cb) { CheckEvent.collection.remove({ }, cb) },
-    ], done);
+    if (mongoose.connection.readyState === 1) return done();
+    mongoose.connection.once('open', done);
+  });
+
+  before(async function() {
+    this.timeout(10000);
+    await Ping.collection.deleteMany({});
+    await Check.collection.deleteMany({});
+    await CheckEvent.collection.deleteMany({});
   });
 
   before(function() {
@@ -24,8 +29,7 @@ describe('intervalBuilder', function() {
 
   before(function(done) {
     check1 = new Check();
-    check1.save(function(err) {
-      if (err) throw (err);
+    check1.save().then(function() {
       async.series([
         function(cb) { Ping.createForCheck(false, now - 3000, 100, check1, 'dummy1', '', null, cb); },
         function(cb) { Ping.createForCheck(false, now - 2000, 100, check1, 'dummy2', '', null, cb); },
@@ -35,12 +39,12 @@ describe('intervalBuilder', function() {
         function(cb) { Ping.createForCheck(false, now + 2000, 100, check1, 'dummy6', '', null, cb); },
         function(cb) { Ping.createForCheck(true,  now + 3000, 100, check1, 'dummy7', '', null, cb); }
       ], done);
-    });
+    }).catch(done);
   });
 
   before(function(done) {
     check2 = new Check();
-    check2.save(done);
+    check2.save().then(() => done(), done);
   });
 
   describe('addTarget', function() {
@@ -144,11 +148,10 @@ describe('intervalBuilder', function() {
     });
   });
   
-  after(function(done) {
-    async.parallel([
-      function(cb) { Ping.collection.remove({ }, cb) },
-      function(cb) { Check.collection.remove({ }, cb) },
-      function(cb) { CheckEvent.collection.remove({ }, cb) },
-    ], done);
+  after(async function() {
+    this.timeout(10000);
+    await Ping.collection.deleteMany({});
+    await Check.collection.deleteMany({});
+    await CheckEvent.collection.deleteMany({});
   });
 });
