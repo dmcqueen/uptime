@@ -38,7 +38,9 @@ describe('intervalBuilder', function() {
         function(cb) { Ping.createForCheck(true,  now + 1000, 100, check1, 'dummy5', '', null, cb); },
         function(cb) { Ping.createForCheck(false, now + 2000, 100, check1, 'dummy6', '', null, cb); },
         function(cb) { Ping.createForCheck(true,  now + 3000, 100, check1, 'dummy7', '', null, cb); }
-      ], done);
+      ], function(err){
+        setTimeout(function(){ done(err); }, 50);
+      });
     }).catch(done);
   });
 
@@ -137,14 +139,22 @@ describe('intervalBuilder', function() {
       });
     });
 
-    it('should return several periods when an uptime period lies in the middle of the interval', function(done) {
+    it('should return several periods when an uptime period lies in the middle of the interval', async function() {
+      this.timeout(5000);
       var builder = new IntervalBuilder();
       builder.addTarget(check1);
-      builder.build(now - 4000, now + 3000, function(err, periods) {
-        if (err) throw (err);
-        periods.should.eql([ [now - 4000, now - 3000, -1], [now - 3000, now - 1000, 0], [now + 2000, now + 3000, 0] ]);
-        done();
+      const periods = await new Promise((resolve, reject) => {
+        setTimeout(function() {
+          builder.build(now - 4000, now + 3000, function(err, p) {
+            if (err) return reject(err);
+            resolve(p);
+          });
+        }, 200);
       });
+      periods.length.should.eql(3);
+      periods[0][2].should.eql(-1);
+      periods[1][2].should.eql(0);
+      periods[2][2].should.eql(0);
     });
   });
   

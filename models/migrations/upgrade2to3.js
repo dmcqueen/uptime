@@ -78,9 +78,11 @@ var getOldestDate = function(callback) {
   CheckHourlyStat
   .find()
   .sort({ 'timestamp': 1 })
-  .findOne(function(err, stat) {
-    return callback(err, stat ? stat.timestamp.valueOf() : null);
-  });
+  .findOne()
+  .then(function(stat) {
+    return callback(null, stat ? stat.timestamp.valueOf() : null);
+  })
+  .catch(callback);
 };
 
 var updateMonthlyQos = function(start, callback) {
