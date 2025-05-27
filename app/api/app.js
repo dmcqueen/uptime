@@ -2,28 +2,24 @@
  * Module dependencies.
  */
 var express    = require('express');
+var errorHandler = require('../../lib/basicErrorHandler');
 var Check      = require('../../models/check');
 var CheckEvent = require('../../models/checkEvent');
 
 var app = module.exports = express();
-require('../../lib/express-compat')(app);
 
 var debugErrorHandler = function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(errorHandler({ dumpExceptions: true, showStack: true }));
 }
 
-// middleware
-app.configure(function(){
-  app.use(app.router);
-});
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.configure('development', debugErrorHandler);
-
-app.configure('test', debugErrorHandler);
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
+if (app.get('env') === 'development' || app.get('env') === 'test') {
+  debugErrorHandler();
+} else {
+  app.use(errorHandler());
+}
 
 
 // up count
@@ -74,11 +70,14 @@ require('./routes/ping')(app);
 // route list
 app.get('/', function(req, res) {
   var routes = [];
-  for (var verb in app.routes) {
-    app.routes[verb].forEach(function(route) {
-      routes.push({method: verb.toUpperCase() , path: app.route + route.path});
-    });
-  }
+  app._router.stack.forEach(function(m) {
+    if (m.route) {
+      var path = (app.route || '') + m.route.path;
+      Object.keys(m.route.methods).forEach(function(verb) {
+        routes.push({ method: verb.toUpperCase(), path: path });
+      });
+    }
+  });
   res.json(routes);
 });
 

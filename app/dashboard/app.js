@@ -6,6 +6,8 @@ var async = require('async');
 var partials = require('express-partials');
 var flash = require('connect-flash');
 var moment = require('moment');
+var simpleSession = require('../../lib/simpleSession');
+var errorHandler = require('../../lib/basicErrorHandler');
 
 var Check = require('../../models/check');
 var Tag = require('../../models/tag');
@@ -15,13 +17,14 @@ var CheckMonthlyStat = require('../../models/checkMonthlyStat');
 var moduleInfo = require('../../package.json');
 
 var app = module.exports = express();
-require('../../lib/express-compat')(app);
 
 // middleware
 
-app.configure(function(){
-  app.use(partials());
-  app.use(flash());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(simpleSession());
+app.use(partials());
+app.use(flash());
   app.use(function locals(req, res, next) {
     res.locals.route = app.route;
     res.locals.addedCss = [];
@@ -37,19 +40,14 @@ app.configure(function(){
     res.locals.moment = moment;
     next();
   });
-  app.use(app.router);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(express.static(__dirname + '/public'));
-});
-
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
+if (app.get('env') === 'development') {
+  app.use(errorHandler({ dumpExceptions: true, showStack: true }));
+} else {
+  app.use(errorHandler());
+}
 
 app.locals({
   version: moduleInfo.version
