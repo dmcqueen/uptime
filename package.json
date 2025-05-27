@@ -10,7 +10,7 @@
     "url": "https://github.com/fzaninotto/uptime"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "start": "node app.js",
