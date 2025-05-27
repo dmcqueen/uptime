@@ -15,6 +15,7 @@ var CheckMonthlyStat = require('../../models/checkMonthlyStat');
 var moduleInfo = require('../../package.json');
 
 var app = module.exports = express();
+require('../../lib/express-compat')(app);
 
 // middleware
 

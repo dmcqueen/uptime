@@ -50,13 +50,13 @@ Ping.statics.createForCheck = function(status, timestamp, time, check, monitorNa
   if (details) {
     ping.setDetails(JSON.parse(details));
   }
-  ping.save(function(err1) {
-    if (err1) return callback(err1);
+  ping.save().then(function() {
     check.setLastTest(status, timestamp, error);
-    check.save(function(err2) {
-      if (err2) return callback(err2);
-      callback(null, ping);
-    });
+    return check.save();
+  }).then(function() {
+    callback(null, ping);
+  }).catch(function(err) {
+    callback(err);
   });
 };
 

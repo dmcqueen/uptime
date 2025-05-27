@@ -26,6 +26,7 @@ a.start();
 // web front
 
 var app = module.exports = express();
+require('./lib/express-compat')(app);
 var server = http.createServer(app);
 
 app.configure(function(){
@@ -90,7 +91,15 @@ app.get('/favicon.ico', function(req, res) {
 app.emit('afterLastRoute', app);
 
 // Sockets
-var io = socketIo.listen(server);
+var io = socketIo(server);
+io.configure = function(env, fn) {
+  if (typeof env === 'function') { fn = env; env = undefined; }
+  if (!env || env === app.get('env')) {
+    fn.call(io);
+  }
+};
+if (typeof io.enable !== 'function') io.enable = function(){};
+if (typeof io.set !== 'function') io.set = function(){};
 
 io.configure('production', function() {
   io.enable('browser client etag');
